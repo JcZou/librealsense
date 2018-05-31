@@ -3,6 +3,7 @@
 #include <array>
 #include <set>
 #include <unordered_set>
+#include <unordered_map>
 
 #include "source.h"
 #include "proc/synthetic-stream.h"
@@ -437,6 +438,16 @@ namespace librealsense
                             << ",Arrived," << std::fixed << f.backend_time << " " << std::fixed << system_time<<" diff - "<< system_time- f.backend_time << " "
                             << ",TS," << std::fixed << timestamp << ",TS_Domain," << rs2_timestamp_domain_to_string(timestamp_domain)
                             <<" last_frame_number "<< last_frame_number<<" last_timestamp "<< last_timestamp);
+
+                        static std::unordered_map<int,int> subsample_rate;
+                        if(subsample_rate.count(output.stream_desc.index) == 0){
+                            subsample_rate[output.stream_desc.index] = 0;
+                        }
+                        ++subsample_rate[output.stream_desc.index];
+                        if(subsample_rate[output.stream_desc.index] < 3){
+                            continue;
+                        }
+                        subsample_rate[output.stream_desc.index] = 0;
 
                         std::shared_ptr<stream_profile_interface> request = nullptr;
                         for (auto&& original_prof : mode.original_requests)
