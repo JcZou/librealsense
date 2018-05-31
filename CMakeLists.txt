@@ -28,6 +28,8 @@ function(assign_version_property VER_COMPONENT)
     set(REALSENSE_VERSION_${VER_COMPONENT} ${tmp} PARENT_SCOPE)
 endfunction()
 
+find_package( OpenCV REQUIRED )
+
 set(REALSENSE_VERSION_MAJOR -1)
 set(REALSENSE_VERSION_MINOR -1)
 set(REALSENSE_VERSION_PATCH -1)
@@ -730,16 +732,16 @@ if(BUILD_WITH_TM2)
 endif()
 set_target_properties(realsense2 PROPERTIES VERSION ${REALSENSE_VERSION_STRING}
                                 SOVERSION ${REALSENSE_VERSION_MAJOR})
-target_link_libraries(realsense2 PRIVATE realsense-file ${CMAKE_THREAD_LIBS_INIT} ${TRACKING_DEVICE_LIBS})
+target_link_libraries(realsense2 PRIVATE realsense-file ${CMAKE_THREAD_LIBS_INIT} ${TRACKING_DEVICE_LIBS} ${OpenCV_LIBS})
 
 if (NOT USE_SYSTEM_LIBUSB)
     if(NOT WIN32)
-        target_link_libraries(realsense2 PRIVATE usb)
+        target_link_libraries(realsense2 PRIVATE usb ${OpenCV_LIBS})
     elseif(FORCE_LIBUVC)
-        target_link_libraries(realsense2 PRIVATE usb)
+        target_link_libraries(realsense2 PRIVATE usb ${OpenCV_LIBS})
     endif()
 else()
-    target_link_libraries(realsense2 PRIVATE ${LIBUSB1_LIBRARIES})
+    target_link_libraries(realsense2 PRIVATE ${LIBUSB1_LIBRARIES} ${OpenCV_LIBS})
 endif()
 
 
